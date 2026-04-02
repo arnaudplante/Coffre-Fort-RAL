@@ -25,17 +25,11 @@ void loop(){
     }
     }
     if (car == "*"){
-      
+
   }
-
-
-
-
-
-
-
-
-
-
-
-bool Ouvert()
+bool Ouvert(){
+  // servo ouvert
+}
+bool Ferme(){
+  
+}
