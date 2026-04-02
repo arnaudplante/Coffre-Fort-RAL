@@ -1,4 +1,5 @@
 #include "Arduino.h"
+#include <TM1637Display.h>
 #include <Keypad.h>
 const byte ROWS = 4;
 const byte COLS = 3;
@@ -13,3 +14,25 @@ const char TOUCHES[ROWS][COLS] = {
   { '*', '0', '#'}
 };
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+void loop(){
+  char  car = heroKeypad.waitForKey();
+    if (car == '#'){
+    bool ACCES_PERMIS = Code_Verif();
+    if (ACCES_PERMIS){
+    bool Ouvert() = true;
+    }else{
+      // strike 1
+    }
+    }
+
+
+
+
+
+
+
+
+
+
+
+bool Ouvert()
