@@ -24,6 +24,9 @@ void loop(){
       // strike 1
     }
     }
+    if (car == "*"){
+      
+  }
 
 
 
