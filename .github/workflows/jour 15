@@ -1,115 +1,48 @@
-#include "Arduino.h"  
-#include "Keypad.h"  
-const byte ROWS = 4;  
-const byte COLS = 4;  
-const byte CODE_LONGUEUR = 4;  
-char Code_Actuel[CODE_LONGUEUR] = { '4','1','1','1' };  
-const char TOUCHES[ROWS][COLS] = {  
-  {'1','2','3','A'},  
-  {'4','5','6','B'},  
-  {'7','8','9','C'},  
-  {'*','0','#','D'}  
-};  
-const byte ROW_PINS[ROWS] = {5, 4, 3, 2};  
-const byte COL_PINS[COLS] = {6, 7, 8, 9};   
-Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);   
-const byte BUZZER_PIN = 13;  
-const byte PIN_Rouge = 11;  
-const byte PIN_Verte = 10;  
-const byte PIN_Bleue = 12;    
-bool Code_Verif();  
-void Couleur_Affichee(byte r, byte g, byte b);  
-void Retroaction_Touche();  
-void Retroaction_Succes();  
-void Retroaction_Echec();  
-void setup() {  
-  pinMode(PIN_Rouge, OUTPUT);  
-  pinMode(PIN_Verte, OUTPUT);  
-  pinMode(PIN_Bleue, OUTPUT);  
-  Couleur_Affichee(128, 0, 0);  
-  Serial.begin(9600);  
-  Serial.println("Bonjour. Pour changer le mot de passe, appuyez *. Pour valider votre mot de passe, appuyez #.");  
-}   
-void loop() {  
-  char Caract_Appuye = heroKeypad.getKey();  
-  if (Caract_Appuye == '#') {  
-    Retroaction_Touche();  
-    bool Acces_Permis = Code_Verif();   
-    if (Acces_Permis) { 
-      Serial.println("Le mot de passe est correct. Bienvenue.");  
-    } else { 
-      Serial.println("Mauvais mot de passe.");  
-      Serial.println("Pour changer le mot de passe, appuyez *. Pour valider votre mot de passe, appuyez #.");  
-    }  
-  }  
-  if (Caract_Appuye == '*') {  
-    Serial.println("Menu de changement de code. Pour changer le code, entrez le code actuel.");  
-    Retroaction_Touche();  
-    bool Acces_Permis = Code_Verif();   
-    if (Acces_Permis) {  
-      Couleur_Affichee(128, 80, 0);  
-      Serial.println("Changement de code :");  
-      for (int i = 0; i < CODE_LONGUEUR; i++) {  
-        Code_Actuel[i] = heroKeypad.waitForKey();  
-        if (i < CODE_LONGUEUR - 1) {  
-          Retroaction_Touche();  
-          Couleur_Affichee(128, 80, 0);  
-        }  
-        Serial.print("*");  
-      }  
-      Serial.println();  
-      Serial.println("Le code a été changé.");  
-      Retroaction_Succes();  
-    } else {  
-      Serial.println("Le code est incorrect. Changement de code annulé.");  
-      Serial.println("Pour changer le mot de passe, appuyez *. Pour valider votre mot de passe, appuyez #.");  
-    }  
-  }  
-}  
-bool Code_Verif() {  
-  Serial.println("Saisissez un code :"); 
-  char Code_Entre[CODE_LONGUEUR]; 
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
-    Code_Entre[i] = heroKeypad.waitForKey();  
-    Serial.print("*");  
-    Retroaction_Touche();  
-  }  
-  Serial.println();  
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
-    if (Code_Entre[i] != Code_Actuel[i]) {  
-      Retroaction_Echec();  
-      Serial.println("Code incorrect.");  
-      return false;  
-    }  
-  }  
-  Retroaction_Succes(); 
-  Serial.println("Code correct !"); 
-  return true; 
-}  
-void Couleur_Affichee(byte Intensite_Rouge, byte Intensite_Verte, byte Intensite_Bleue) {  
-  analogWrite(PIN_Rouge, Intensite_Rouge);  
-  analogWrite(PIN_Verte, Intensite_Verte);  
-  analogWrite(PIN_Bleue, Intensite_Bleue);  
-}  
-void Retroaction_Touche() {  
-  Couleur_Affichee(0, 0, 0);  
-  tone(BUZZER_PIN, 880, 200);  
-  delay(200);  
-  Couleur_Affichee(0, 0, 128);  
-}  
-void Retroaction_Succes() {  
-  Couleur_Affichee(0, 0, 0);  
-  tone(BUZZER_PIN, 300, 200);  
-  delay(200);  
-  tone(BUZZER_PIN, 500, 500);  
-  delay(200);  
-  Couleur_Affichee(0, 128, 0);  
-}  
-void Retroaction_Echec() {  
-  Couleur_Affichee(0, 0, 0);  
-  tone(BUZZER_PIN, 300, 200);  
-  delay(200);  
-  tone(BUZZER_PIN, 200, 200);  
-  delay(500);  
-  Couleur_Affichee(128, 0, 0);  
-}  
+
+#include "Arduino.h"
+#include <TM1637Display.h>
+#include <Keypad.h>
+#include <Servo.h>
+
+const byte Servo = 13; 
+const byte ROWS = 4;
+const byte COLS = 3;
+const byte CODE_LONGUEUR = 4;
+char Code_Actuel[CODE_LONGUEUR] = { '1', '9', '4', '5' };
+const byte ROW_PINS[ROWS] = { 7, 6, 5, 4};
+const byte COL_PINS[COLS] = {8, 9, 10,};
+const char TOUCHES[ROWS][COLS] = {
+  { '1', '2', '3'},
+  { '4', '5', '6'},
+  { '7', '8', '9'},
+  { '*', '0', '#'}
+};
+Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+
+void setup() {
+int servolock = 0;
+}
+void loop(){
+  char  car = heroKeypad.waitForKey();
+    if (car == '#'){
+    bool ACCES_PERMIS = Code_Verif();
+    if (ACCES_PERMIS){
+    bool Ouvert() = true;
+    }else{
+      // strike 1
+    }
+    }
+    if (car == "*"){
+
+  }
+bool Ouvert(){
+for (s = 0; s <= 180; s += 1) { //0-180 degrés par +1
+    servolock.analogWrite(s); 
+    delay(15);         
+}
+bool Ferme(){
+    for (s = 180; s >= 0; s -= 1) { //180-0 degrés par -1
+    servolock.analogWrite(s);             
+    delay(15);                       
+  }
+}
