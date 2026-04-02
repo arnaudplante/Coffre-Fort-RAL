@@ -1,1 +1,70 @@
+#include "Arduino.h"
+#include <Keypad.h>
+const byte CODE_LONGUEUR = 4;
+char Code_Actuel[CODE_LONGUEUR] = { '4', '1', '0', '4' };
+const byte ROWS = 4;
+const byte COLS = 4;
+const byte ROW_PINS[ROWS] = { 5, 4, 3, 2 };
+const byte COL_PINS[COLS] = { 6, 7, 8, 9 };
+const char TOUCHES[ROWS][COLS] = {
+  { '1', '2', '3', 'A' },
+  { '4', '5', '6', 'B' },
+  { '7', '8', '9', 'C' },
+  { '*', '0', '#', 'D' }
+};
+Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+const byte BUZZER_PIN = 10;
+void setup(){
+  pinMode(BUZZER_PIN, OUTPUT);
 
+  Serial.begin(9600);
+  delay(200);
+  Serial.println("ENTRE TON MODE DE PASSE");
+}
+void loop(){
+  char  car = heroKeypad.waitForKey();
+  tone(BUZZER_PIN, 880, 100);
+  if (car == '#'){
+    bool ACCES_PERMIS = Code_Verif();
+    if (ACCES_PERMIS){
+      Serial.println("ACCEPTE");
+    } else {
+      Serial.println("NON SALE BOZO");
+      Serial.println("MET LE BON MOT DE PASSE GNOCHON");
+    }
+  }
+  if (car == "*"){
+    bool ACCES_PERMIS = Code_Verif();
+    if(ACCES_PERMIS){
+      Serial.println("c quoi ton nouveau code?");
+      for(int i = 0; i < CODE_LONGUEUR; i++){
+        car = heroKeypad.waitForKey();
+        tone(BUZZER_PIN, 880, 100);
+        Code_Actuel[i] = car;
+        Serial.println("*");
+      }
+      Serial.println();
+      Serial.println("OUBLIE PAS TON NOUVEAU CODE CRISS DE CAVE");
+    } else {
+      Serial.println("NON SALE BOZO");
+      Serial.println("ENTRE TON MOT DE PASSE");
+    }
+  }
+}
+bool Code_Verif(){
+  Serial.println("yo");
+  for(int i = 0; i < CODE_LONGUEUR; i++) {
+    char car = heroKeypad.waitForKey();
+    tone(BUZZER_PIN, 880, 100);
+    if (Code_Actuel[i] != car) {
+      Serial.println();
+      Serial.println("Mauvais chiffre: ");
+      Serial.println(car);
+      return false;
+    }
+    Serial.println("*");
+  }
+  Serial.println();
+  Serial.println("hey bbg ૮₍ ˶ᵔ ᵕ ᵔ˶ ₎ა");
+  return true;
+}
