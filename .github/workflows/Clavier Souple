@@ -1,6 +1,9 @@
 #include "Arduino.h"
 #include <TM1637Display.h>
 #include <Keypad.h>
+#include <Servo.h>
+
+const byte Servo = 13; 
 const byte ROWS = 4;
 const byte COLS = 3;
 const byte CODE_LONGUEUR = 4;
@@ -14,6 +17,10 @@ const char TOUCHES[ROWS][COLS] = {
   { '*', '0', '#'}
 };
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+
+void setup() {
+int servolock = 0;
+}
 void loop(){
   char  car = heroKeypad.waitForKey();
     if (car == '#'){
@@ -28,8 +35,13 @@ void loop(){
 
   }
 bool Ouvert(){
-  // servo ouvert
+for (s = 0; s <= 180; s += 1) { //0-180 degrés par +1
+    servolock.analogWrite(s); 
+    delay(15);         
 }
 bool Ferme(){
-  
+    for (s = 180; s >= 0; s -= 1) { //180-0 degrés par -1
+    servolock.analogWrite(s);             
+    delay(15);                       
+  }
 }
