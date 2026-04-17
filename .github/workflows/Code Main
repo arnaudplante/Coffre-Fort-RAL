@@ -6,6 +6,7 @@ byte input = 0;
 const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
+int essai = 0;
 
 byte a = 0;
 byte b = 0;
@@ -56,6 +57,25 @@ void loop() {
     } else if (input == 4) {
       d = digit;
     }
+
+  if (Caract_Appuye == '#') {  
+    Retroaction_Touche();  
+    bool Acces_Permis = Code_Verif();   
+    if (Acces_Permis) { 
+      Serial.println("Le mot de passe est correct. Bienvenue.");  
+      //le servo devrait déverrouiller le coffre ici
+      //aussi activer le code pour le photoresistor,
+      //que lorsque le coffre se referme, le code recommence.
+    } else { 
+      essai += 1; 
+      if (essai >= 3) {
+        delay(10000);
+        essai =0;
+      }
+      //mauvais mot de passe 
+    }  
+  }  
+
 
     byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
