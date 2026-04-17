@@ -1,47 +1,63 @@
-#include "Arduino.h"
+#include <Arduino.h>
 #include <TM1637Display.h>
 #include <Keypad.h>
-#include <Servo.h>
 
-const byte Servo = 13; 
+byte input = 0;
+const byte AFF_PROF_CLK_PIN = 2;
+const byte AFF_PROF_DIO_PIN = 3;
+TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
+
+byte a = 0;
+byte b = 0;
+byte c = 0;
+byte d = 0;
+
 const byte ROWS = 4;
 const byte COLS = 3;
-const byte CODE_LONGUEUR = 4;
-char Code_Actuel[CODE_LONGUEUR] = { '1', '9', '4', '5' };
-const byte ROW_PINS[ROWS] = { 6, 5, 4};
-const byte COL_PINS[COLS] = {7, 8, 9, 10 };
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
+const byte COL_PINS[COLS] = {8, 9, 10};
+
 const char TOUCHES[ROWS][COLS] = {
-  { '1', '2', '3'},
-  { '4', '5', '6'},
-  { '7', '8', '9'},
-  { '*', '0', '#'}
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
 };
+
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
 
 void setup() {
-int servolock = 0;
+  Serial.begin(9600);
+  display.setBrightness(7);
+  display.clear();
 }
-void loop(){
-  char  car = heroKeypad.waitForKey();
-    if (car == '#'){
-    bool ACCES_PERMIS = Code_Verif();
-    if (ACCES_PERMIS){
-    bool Ouvert() = true;
-    }else{
-      // strike 1
-    }
-    }
-    if (car == "*"){
 
+void loop() {
+  char car = heroKeypad.waitForKey();
+
+  if (car == '*') {
+    input = 0;
+    a = b = c = d = 0;
+    display.clear();
+    return;
   }
-bool Ouvert(){
-for (s = 0; s <= 180; s += 1) { //0-180 degrés par +1
-    servolock.analogWrite(s); 
-    delay(15);         
-}
-bool Ferme(){
-    for (s = 180; s >= 0; s -= 1) { //180-0 degrés par -1
-    servolock.analogWrite(s);             
-    delay(15);                       
+
+  if (car >= '0' && car <= '9') {
+
+    byte digit = display.encodeDigit(car - '0');
+    input++;
+
+    if (input == 1) {
+      a = digit;
+    } else if (input == 2) {
+      b = digit;
+    } else if (input == 3) {
+      c = digit;
+    } else if (input == 4) {
+      d = digit;
+    }
+
+    byte affichage[4] = {a, b, c, d};
+    display.setSegments(affichage);
   }
 }
