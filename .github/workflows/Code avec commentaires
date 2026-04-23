@@ -1,0 +1,59 @@
+#include <Arduino.h>
+#include <TM1637Display.h>
+#include <Keypad.h>
+// librairies
+byte input = 0;
+// met le nombre de touches appuyes a 0
+const byte AFF_PROF_CLK_PIN = 2;
+const byte AFF_PROF_DIO_PIN = 3;
+// pin pour le tm1637
+TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
+// variable pour tm1637
+byte a = 0;
+byte b = 0;
+byte c = 0;
+byte d = 0;
+// met les variables a,b,c et d a 0
+const byte ROWS = 4;
+const byte COLS = 3;
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
+const byte COL_PINS[COLS] = {8, 9, 10};
+//pin pour clavier souple
+const char TOUCHES[ROWS][COLS] = {
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
+};
+//setup pour clavier souple
+Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+// cree la variable herokeypad
+void setup() {
+  display.setBrightness(7);
+  display.clear();
+// met la luminosite de l'ecran et reset tout de l'ecran
+}
+void loop() {
+  char car = heroKeypad.waitForKey(); // cree la variable car pour la touche selectee
+  if (car == '*') { // quand * est appuye, tout ce fait supprimer
+    input = 0;
+    a = b = c = d = 0;
+    display.clear();
+    return;
+  } // quand * est appuye, tout ce fait supprimer et les segments se font reset
+  if (car >= '0' && car <= '9') { // si la touche est inclue entre 0 et 9
+    byte digit = display.encodeDigit(car - '0'); // transforme le "un" en "1"
+    input++; // ajoute 1 au nombre de touches appyees
+    if (input == 1) {
+      a = digit; // premier segment
+    } else if (input == 2) {
+      b = digit; // deuxieme segment
+    } else if (input == 3) {
+      c = digit; // troisieme segment
+    } else if (input == 4) {
+      d = digit; // quatrieme segment
+    }
+    byte affichage[4] = {a, b, c, d}; // met les segments a,b,c et d en ordre
+    display.setSegments(affichage);    // affiche les segments
+  }
+}
