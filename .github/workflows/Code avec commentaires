@@ -3,7 +3,7 @@
 #include <Keypad.h>
 #include <Servo.h>
 
-Servo myServo10; //initialisation du servo sur la pin 10
+Servo myServo11; //initialisation du servo sur la pin 11
 
 const byte CODE_LONGUEUR = 4;
 byte input = 0;
