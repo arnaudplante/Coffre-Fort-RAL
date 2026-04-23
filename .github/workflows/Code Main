@@ -2,11 +2,14 @@
 #include <TM1637Display.h>
 #include <Keypad.h>
 
+const byte CODE_LONGUEUR = 4;
 byte input = 0;
 const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
+
+char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };  
 
 byte a = 0;
 byte b = 0;
@@ -34,6 +37,7 @@ void setup() {
 }
 
 void loop() {
+  bool Code_Verif();
   char car = heroKeypad.waitForKey();
 
   if (car == '*') {
@@ -58,8 +62,8 @@ void loop() {
       d = digit;
     }
 
-  if (Caract_Appuye == '#') {  
-    Retroaction_Touche();  
+  if (car == '#') {  
+   
     bool Acces_Permis = Code_Verif();   
     if (Acces_Permis) { 
       Serial.println("Le mot de passe est correct. Bienvenue.");  
@@ -80,4 +84,25 @@ void loop() {
     byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
   }
+
+
+
+  Serial.println("Saisissez un code :"); 
+  char Code_Entre[CODE_LONGUEUR]; 
+  for (int i = 0; i < CODE_LONGUEUR; i++) {  
+    Code_Entre[i] = affichage;
+    Serial.print("*");  
+   
+  }  
+  Serial.println();  
+  for (int i = 0; i < CODE_LONGUEUR; i++) {  
+    if (Code_Entre[i] != Code_Actuel[i]) {  
+      Serial.println("Code incorrect.");  
+      return false;  
+    }  
+  }  
 }
+}
+
+
+
