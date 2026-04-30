@@ -38,7 +38,7 @@ void setup() {
   display.setBrightness(7);
   display.clear();
 
-  myServo10.attach(10);                             //lier le servo et la pin 10
+  myServo11.attach(11);                             //lier le servo et la pin 10
 }
 
 void loop() {
@@ -72,7 +72,7 @@ void loop() {
     bool Acces_Permis = Code_Verif();   
     if (Acces_Permis) { 
       Serial.println("Le mot de passe est correct. Bienvenue.");             //a enlever----
-    myServo10.write(0);// action du servo pour déverrouiller le coffre
+    myServo11.write(0);// action du servo pour déverrouiller le coffre
     delay(1000);
                                            //le servo devrait déverrouiller le coffre ici
     } else { 
