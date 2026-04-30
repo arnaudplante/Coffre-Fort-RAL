@@ -87,7 +87,6 @@ void loop() {
 
 
 
-  Serial.println("Saisissez un code :"); 
   char Code_Entre[CODE_LONGUEUR]; 
   for (int i = 0; i < CODE_LONGUEUR; i++) {  
     Code_Entre[i] = affichage;
