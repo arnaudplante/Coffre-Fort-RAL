@@ -12,19 +12,19 @@ const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
 
-char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };  
+char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };      // notre code(1945)
 
 byte a = 0;
 byte b = 0;
 byte c = 0;
 byte d = 0;
 
-const byte ROWS = 4;
-const byte COLS = 3;
-const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
-const byte COL_PINS[COLS] = {8, 9, 10};
+const byte ROWS = 4; //4 colonnes
+const byte COLS = 3; //3 rangés
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};                  //pins
+const byte COL_PINS[COLS] = {8, 9, 10};                    //pins
 
-const char TOUCHES[ROWS][COLS] = {
+const char TOUCHES[ROWS][COLS] = {                         //touches possible en fonction de où tu appuie
   {'1','2','3'},
   {'4','5','6'},
   {'7','8','9'},
@@ -38,7 +38,7 @@ void setup() {
   display.setBrightness(7);
   display.clear();
 
-  myServo10.attach(10); //charcuter le servo et la pin 6+7-3
+  myServo10.attach(10);                             //lier le servo et la pin 10
 }
 
 void loop() {
@@ -71,20 +71,18 @@ void loop() {
    
     bool Acces_Permis = Code_Verif();   
     if (Acces_Permis) { 
-      Serial.println("Le mot de passe est correct. Bienvenue.");  //a enlever
-    myServo10.write(90);// action du servo pour déverrouiller le coffre
+      Serial.println("Le mot de passe est correct. Bienvenue.");             //a enlever----
+    myServo10.write(0);// action du servo pour déverrouiller le coffre
     delay(1000);
-      //le servo devrait déverrouiller le coffre ici
-      //aussi activer le code pour le photoresistor,
-      //que lorsque le coffre se referme, le code recommence.
+                                           //le servo devrait déverrouiller le coffre ici
     } else { 
-      essai += 1; //+1 essai
-      myServo10.write(0);// action du servo pour verrouiller le coffre
-      if (essai >= 3) {//si plus ou egal a 3 essais
-        delay(10000); //attente pour ressayer de 10 sec
-        essai =0;    //reset du nb d'essai afin de ressayer
+      essai += 1;                          //+1 essai
+      myServo10.write(0);                  // action du servo pour verrouiller le coffre
+      if (essai >= 3) {                    //si plus ou égal a 3 essais
+        delay(10000);                      //attente pour rééssayer de 10 sec---------------
+        essai =0;                          //remetttre le nombre d'essais à 0
       }
-      //mauvais mot de passe 
+                                           //mauvais mot de passe 
     }  
   }  
 
@@ -95,7 +93,7 @@ void loop() {
 
 
 
-  Serial.println("Saisissez un code :"); 
+  Serial.println("Saisissez un code :");        //inutile, repère visuel
   char Code_Entre[CODE_LONGUEUR]; 
   for (int i = 0; i < CODE_LONGUEUR; i++) {  
     Code_Entre[i] = affichage;
@@ -103,7 +101,7 @@ void loop() {
    
   }  
   Serial.println();  
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
+  for (int i = 0; i < CODE_LONGUEUR; i++) {           // action de mauvais code
     if (Code_Entre[i] != Code_Actuel[i]) {  
       Serial.println("Code incorrect.");  
       return false;  
