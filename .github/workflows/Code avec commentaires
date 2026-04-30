@@ -11,7 +11,7 @@ const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
-
+char affichage;
 char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };      // notre code(1945)
 
 byte a = 0;
