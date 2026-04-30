@@ -66,7 +66,6 @@ void loop() {
    
     bool Acces_Permis = Code_Verif();   
     if (Acces_Permis) { 
-      Serial.println("Le mot de passe est correct. Bienvenue.");  
       //le servo devrait déverrouiller le coffre ici
       //aussi activer le code pour le photoresistor,
       //que lorsque le coffre se referme, le code recommence.
@@ -90,13 +89,11 @@ void loop() {
   char Code_Entre[CODE_LONGUEUR]; 
   for (int i = 0; i < CODE_LONGUEUR; i++) {  
     Code_Entre[i] = affichage;
-    Serial.print("*");  
    
   }  
   Serial.println();  
   for (int i = 0; i < CODE_LONGUEUR; i++) {  
     if (Code_Entre[i] != Code_Actuel[i]) {  
-      Serial.println("Code incorrect.");  
       return false;  
     }  
   }  
