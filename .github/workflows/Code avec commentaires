@@ -52,12 +52,12 @@ void loop() {
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
-
   duration = pulseIn(echoPin, HIGH);
   distance = (duration*.0343)/2;
   delay(100);
   if (distance >= 11 && distance <= 13){
-   myServo11.write(90);  
+  delay(200);
+  myServo11.write(90);  
   bool Code_Verif();
   char car = heroKeypad.waitForKey();
 
