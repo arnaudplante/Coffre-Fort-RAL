@@ -85,6 +85,9 @@ digitalWrite(trigPin, LOW);
     } 
       display.clear();
       a = b = c = d = 0;
+      input = 0;
+      return;
+
 
  
   } 
