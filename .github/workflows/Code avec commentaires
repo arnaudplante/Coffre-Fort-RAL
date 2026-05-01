@@ -38,7 +38,7 @@ void setup() {
   display.setBrightness(7);
   display.clear();
 
-  myServo11.attach(11);                             //lier le servo et la pin 10
+  myServo11.attach(11);                             //lier le servo et la pin 11
 }
 
 void loop() {
