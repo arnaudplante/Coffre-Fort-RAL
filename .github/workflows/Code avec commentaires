@@ -2,7 +2,7 @@
 #include <TM1637Display.h>
 #include <Keypad.h>
 #include <Servo.h>
-
+bool boncode;
 Servo myServo11; //initialisation du servo sur la pin 11
 
 const byte CODE_LONGUEUR = 4;
@@ -21,8 +21,8 @@ byte b = 0;
 byte c = 0;
 byte d = 0;
 
-const byte ROWS = 4; //4 colonnes
-const byte COLS = 3; //3 rangés
+const byte ROWS = 4;                                       //4 colonnes
+const byte COLS = 3;                                       //3 rangés
 const byte ROW_PINS[ROWS] = {4, 5, 6, 7};                  //pins
 const byte COL_PINS[COLS] = {8, 9, 10};                    //pins
 
@@ -39,37 +39,57 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   Serial.begin(9600);
-  display.setBrightness(7);
+  display.setBrightness(7);                         // clareté de l'écran
   display.clear();
 
-  myServo11.attach(11);                             //lier le servo et la pin 11
+  myServo11.attach(11);   //lier le servo et la pin 11
   myServo11.write(90);          //servo en mode verrouillé au début
+
 }
 
 void loop() {
-  digitalWrite(trigPin, LOW);
+digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = (duration*.0343)/2;
-  delay(100);
+  Serial.println(distance); 
   if (distance >= 11 && distance <= 13){
   delay(200);
-  myServo11.write(90);  
-  bool Code_Verif();
+  myServo11.write(90); 
+  }
   char car = heroKeypad.waitForKey();
-
+  bool Code_Verif();
   if (car == '*') {
     input = 0;
     a = b = c = d = 0;
     display.clear();
     return;
   }
+    if (car == '#') {  
+   if(boncode= true){
+
+    myServo11.write(0);                                                      // action du servo pour déverrouiller le coffre
+    delay(1000);
+                                           //le servo devrait déverrouiller le coffre ici
+    } else { 
+      essai += 1;                          //+1 essai
+      myServo11.write(90);                 // action du servo pour verrouiller le coffre
+      if (essai >= 3) {                    //si plus ou égal a 3 essais
+        delay(10000);                      //attente pour rééssayer de 10 sec---------------
+        essai =0;                          //remetttre le nombre d'essais à 0
+      }
+                                           //mauvais mot de passe 
+    } 
+      display.clear();
+      a = b = c = d = 0;
+
+ 
+  } 
 
   if (car >= '0' && car <= '9') {
-
     byte digit = display.encodeDigit(car - '0');
     input++;
 
@@ -81,47 +101,22 @@ void loop() {
       c = digit;
     } else if (input == 4) {
       d = digit;
-    }
-
-  if (car == '#') {  
-   
-    bool Acces_Permis = Code_Verif();   
-    if (Acces_Permis) { 
-      Serial.println("Le mot de passe est correct. Bienvenue.");             //a enlever----
-    myServo11.write(0);// action du servo pour déverrouiller le coffre
-    delay(1000);
-                                           //le servo devrait déverrouiller le coffre ici
-    } else { 
-      essai += 1;                          //+1 essai
-      myServo11.write(90);                  // action du servo pour verrouiller le coffre
-      if (essai >= 3) {                    //si plus ou égal a 3 essais
-        delay(10000);                      //attente pour rééssayer de 10 sec---------------
-        essai =0;                          //remetttre le nombre d'essais à 0
+      if(a== '1' && b== '9'&& c == '4'&& d== '5'){
+        boncode = true;
+        Serial.println(boncode);
+      }else{
+        boncode = false;
       }
-                                           //mauvais mot de passe 
-    }  
-  }  
-
-
-    byte affichage[4] = {a, b, c, d};
+    }
+     byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
   }
 
-
-
-  Serial.println("Saisissez un code :");        //inutile, repère visuel
   char Code_Entre[CODE_LONGUEUR]; 
   for (int i = 0; i < CODE_LONGUEUR; i++) {  
     Code_Entre[i] = affichage;
-    Serial.print("*");  
    
   }  
-  Serial.println();  
   for (int i = 0; i < CODE_LONGUEUR; i++) {           // action de mauvais code
-    if (Code_Entre[i] != Code_Actuel[i]) {  
-      Serial.println("Code incorrect.");  
-      return false;  
-    }  
-  }  
 }
-// source = https://projecthub.arduino.cc/Isaac100/getting-started-with-the-hc-sr04-ultrasonic-sensor-7cabe1
+}
