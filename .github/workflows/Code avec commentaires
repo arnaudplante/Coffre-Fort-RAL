@@ -13,7 +13,9 @@ TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
 char affichage;
 char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };      // notre code(1945)
-
+const int trigPin = 13;
+const int echoPin = 12;
+float duration, distance;
 byte a = 0;
 byte b = 0;
 byte c = 0;
@@ -34,6 +36,8 @@ const char TOUCHES[ROWS][COLS] = {                         //touches possible en
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
 
 void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
   Serial.begin(9600);
   display.setBrightness(7);
   display.clear();
@@ -43,6 +47,17 @@ void setup() {
 }
 
 void loop() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration*.0343)/2;
+  delay(100);
+  if (distance >= 11 && distance <= 13){
+   myServo11.write(90);  
   bool Code_Verif();
   char car = heroKeypad.waitForKey();
 
