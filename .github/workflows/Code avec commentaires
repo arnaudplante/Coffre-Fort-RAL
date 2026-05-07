@@ -67,6 +67,17 @@ digitalWrite(trigPin, LOW);
     display.clear();
     return;
   }
+  /*if (boncode = 1 && distance <) {
+*   lorsque code dévérrouillé et la porte est fermée, verrouiller auto le coffre
+*   et mettre boncode a 0
+ * }
+*/
+
+
+
+
+
+
     if (car == '#') {  
    if(boncode == 1){
     Serial.println("Code validé inshallah");
