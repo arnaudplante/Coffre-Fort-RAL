@@ -12,7 +12,6 @@ const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
 char affichage;
-char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };      // notre code(1945)
 const int trigPin = 13;
 const int echoPin = 12;
 float duration, distance;
@@ -55,7 +54,7 @@ digitalWrite(trigPin, LOW);
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = (duration*.0343)/2;
-  Serial.println(distance); 
+  //Serial.println(distance); 
   if (distance >= 11 && distance <= 13){
   delay(200);
   myServo11.write(90); 
@@ -69,14 +68,17 @@ digitalWrite(trigPin, LOW);
     return;
   }
     if (car == '#') {  
-   if(boncode= true){
-
+   if(boncode == 1){
+    Serial.println("Code validé inshallah");
     myServo11.write(0);                                                      // action du servo pour déverrouiller le coffre
     delay(1000);
                                            //le servo devrait déverrouiller le coffre ici
     } else { 
+      Serial.println("Code pas bon inshallah");
       essai += 1;                          //+1 essai
-      myServo11.write(90);                 // action du servo pour verrouiller le coffre
+      myServo11.write(90);  
+      a = b = c = d = 0;
+      display.clear();               // action du servo pour verrouiller le coffre
       if (essai >= 3) {                    //si plus ou égal a 3 essais
         delay(10000);                      //attente pour rééssayer de 10 sec---------------
         essai =0;                          //remetttre le nombre d'essais à 0
@@ -98,28 +100,25 @@ digitalWrite(trigPin, LOW);
 
     if (input == 1) {
       a = digit;
+      Serial.println(a);
     } else if (input == 2) {
       b = digit;
+      Serial.println(b);
     } else if (input == 3) {
       c = digit;
+      Serial.println(c);
     } else if (input == 4) {
       d = digit;
-      if(a== '1' && b== '9'&& c == '4'&& d== '5'){
-        boncode = true;
+      Serial.println(d);
+      if(a == 6 && b == 111 && c == 102 && d == 109){
+      boncode = true;
         Serial.println(boncode);
       }else{
         boncode = false;
+        Serial.println(boncode);
       }
     }
      byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
   }
-
-  char Code_Entre[CODE_LONGUEUR]; 
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
-    Code_Entre[i] = affichage;
-   
-  }  
-  for (int i = 0; i < CODE_LONGUEUR; i++) {           // action de mauvais code
-}
 }
