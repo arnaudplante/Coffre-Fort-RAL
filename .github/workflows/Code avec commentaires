@@ -2,8 +2,9 @@
 #include <TM1637Display.h>
 #include <Keypad.h>
 #include <Servo.h>
-bool boncode;
-Servo myServo11; //initialisation du servo sur la pin 11
+
+bool boncode = false;
+Servo myServo11;
 
 const byte CODE_LONGUEUR = 4;
 byte input = 0;
@@ -11,21 +12,22 @@ const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
-char affichage;
+
 const int trigPin = 13;
 const int echoPin = 12;
 float duration, distance;
+
 byte a = 0;
 byte b = 0;
 byte c = 0;
 byte d = 0;
 
-const byte ROWS = 4;                                       //4 colonnes
-const byte COLS = 3;                                       //3 rangés
-const byte ROW_PINS[ROWS] = {4, 5, 6, 7};                  //pins
-const byte COL_PINS[COLS] = {8, 9, 10};                    //pins
+const byte ROWS = 4;
+const byte COLS = 3;
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
+const byte COL_PINS[COLS] = {8, 9, 10};
 
-const char TOUCHES[ROWS][COLS] = {                         //touches possible en fonction de où tu appuie
+const char TOUCHES[ROWS][COLS] = {
   {'1','2','3'},
   {'4','5','6'},
   {'7','8','9'},
@@ -38,98 +40,83 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   Serial.begin(9600);
-  display.setBrightness(7);                         // clareté de l'écran
+  display.setBrightness(7);
   display.clear();
 
-  myServo11.attach(11);   //lier le servo et la pin 11
-  myServo11.write(90);          //servo en mode verrouillé au début
-
+  myServo11.attach(11);
+  myServo11.write(90);
 }
 
 void loop() {
-digitalWrite(trigPin, LOW);
+
+  digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
   delayMicroseconds(10);
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
-  distance = (duration*.0343)/2;
-  //Serial.println(distance); 
-  if (distance >= 11 && distance <= 13){
-  delay(200);
-  myServo11.write(90); 
+  distance = (duration * 0.0343) / 2;
+
+  if (distance >= 11 && distance <= 13) {
+    myServo11.write(90);
+    boncode = false;
   }
+
   char car = heroKeypad.waitForKey();
-  bool Code_Verif();
+
   if (car == '*') {
     input = 0;
     a = b = c = d = 0;
     display.clear();
     return;
   }
-  /*if (boncode = 1 && distance <) {
-*   lorsque code dévérrouillé et la porte est fermée, verrouiller auto le coffre
-*   et mettre boncode a 0
- * }
-*/
 
-
-
-
-
-
-    if (car == '#') {  
-   if(boncode == 1){
-    Serial.println("Code validé inshallah");
-    myServo11.write(0);                                                      // action du servo pour déverrouiller le coffre
-    delay(1000);
-                                           //le servo devrait déverrouiller le coffre ici
-    } else { 
-      Serial.println("Code pas bon inshallah");
-      essai += 1;                          //+1 essai
-      myServo11.write(90);  
+  if (car == '#') {
+    if (boncode == true) {
+      myServo11.write(0);
+      delay(1000);
+    } else {
+      essai++;
+      myServo11.write(90);
       a = b = c = d = 0;
-      display.clear();               // action du servo pour verrouiller le coffre
-      if (essai >= 3) {                    //si plus ou égal a 3 essais
-        delay(10000);                      //attente pour rééssayer de 10 sec---------------
-        essai =0;                          //remetttre le nombre d'essais à 0
-      }
-                                           //mauvais mot de passe 
-    } 
       display.clear();
-      a = b = c = d = 0;
-      input = 0;
-      return;
 
+      if (essai >= 3) {
+        byte tirets[4] = {0x40, 0x40, 0x40, 0x40};
+        display.setSegments(tirets);
+        delay(300000);
+        essai = 0;
+        display.clear();
+      }
+    }
 
- 
-  } 
+    display.clear();
+    a = b = c = d = 0;
+    input = 0;
+    return;
+  }
 
   if (car >= '0' && car <= '9') {
     byte digit = display.encodeDigit(car - '0');
     input++;
 
-    if (input == 1) {
-      a = digit;
-      Serial.println(a);
-    } else if (input == 2) {
-      b = digit;
-      Serial.println(b);
-    } else if (input == 3) {
-      c = digit;
-      Serial.println(c);
-    } else if (input == 4) {
+    if (input == 1) a = digit;
+    else if (input == 2) b = digit;
+    else if (input == 3) c = digit;
+    else if (input == 4) {
       d = digit;
-      Serial.println(d);
-      if(a == 6 && b == 111 && c == 102 && d == 109){
-      boncode = true;
-        Serial.println(boncode);
-      }else{
+
+      if (a == display.encodeDigit(1) &&
+          b == display.encodeDigit(9) &&
+          c == display.encodeDigit(4) &&
+          d == display.encodeDigit(5)) {
+        boncode = true;
+      } else {
         boncode = false;
-        Serial.println(boncode);
       }
     }
-     byte affichage[4] = {a, b, c, d};
+
+    byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
   }
 }
