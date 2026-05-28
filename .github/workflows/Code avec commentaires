@@ -4,14 +4,14 @@
 #include <Servo.h>
 
 bool boncode = false;
-Servo myServo11;
+Servo myServo11;    // initialisation du servo
 
-const byte CODE_LONGUEUR = 4;
+const byte CODE_LONGUEUR = 4;   //4 de long 
 byte input = 0;
 const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
-int essai = 0;
+int essai = 0;   //mettre les essais à 0
 
 const int trigPin = 13;
 const int echoPin = 12;
@@ -22,12 +22,12 @@ byte b = 0;
 byte c = 0;
 byte d = 0;
 
-const byte ROWS = 4;
-const byte COLS = 3;
-const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
-const byte COL_PINS[COLS] = {8, 9, 10};
+const byte ROWS = 4;   // 4 colonnes
+const byte COLS = 3;    //3 rangés
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};  //pins associés
+const byte COL_PINS[COLS] = {8, 9, 10};   //pins associés
 
-const char TOUCHES[ROWS][COLS] = {
+const char TOUCHES[ROWS][COLS] = {  //touches possible à écrire
   {'1','2','3'},
   {'4','5','6'},
   {'7','8','9'},
@@ -40,11 +40,11 @@ void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
   Serial.begin(9600);
-  display.setBrightness(7);
+  display.setBrightness(7);    //luminosité de l'ecran
   display.clear();
 
-  myServo11.attach(11);
-  myServo11.write(90);
+  myServo11.attach(11);  //atacher le sevrvo sur la pin 11
+  myServo11.write(90);   // barrer le servo
 }
 
 void loop() {
