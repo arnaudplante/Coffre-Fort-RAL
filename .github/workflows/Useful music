@@ -1,1 +1,105 @@
+#include <Arduino.h>
+#include <TM1637Display.h>
+#include <Keypad.h>
+
+const byte CODE_LONGUEUR = 4;
+byte input = 0;
+const byte AFF_PROF_CLK_PIN = 2;
+const byte AFF_PROF_DIO_PIN = 3;
+TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
+int essai = 0;
+
+char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };  
+
+byte a = 0;
+byte b = 0;
+byte c = 0;
+byte d = 0;
+
+const byte ROWS = 4;
+const byte COLS = 3;
+const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
+const byte COL_PINS[COLS] = {8, 9, 10};
+
+const char TOUCHES[ROWS][COLS] = {
+  {'1','2','3'},
+  {'4','5','6'},
+  {'7','8','9'},
+  {'*','0','#'}
+};
+
+Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
+
+void setup() {
+  Serial.begin(9600);
+  display.setBrightness(7);
+  display.clear();
+}
+
+void loop() {
+  bool Code_Verif();
+  char car = heroKeypad.waitForKey();
+
+  if (car == '*') {
+    input = 0;
+    a = b = c = d = 0;
+    display.clear();
+    return;
+  }
+
+  if (car >= '0' && car <= '9') {
+
+    byte digit = display.encodeDigit(car - '0');
+    input++;
+
+    if (input == 1) {
+      a = digit;
+    } else if (input == 2) {
+      b = digit;
+    } else if (input == 3) {
+      c = digit;
+    } else if (input == 4) {
+      d = digit;
+    }
+
+  if (car == '#') {  
+   
+    bool Acces_Permis = Code_Verif();   
+    if (Acces_Permis) { 
+      //le servo devrait déverrouiller le coffre ici
+      //aussi activer le code pour le photoresistor,
+      //que lorsque le coffre se referme, le code recommence.
+    } else { 
+      essai += 1; 
+      if (essai >= 3) {
+        delay(10000);
+        essai =0;
+      }
+      //mauvais mot de passe 
+    }  
+  }  
+
+
+    byte affichage[4] = {a, b, c, d};
+    display.setSegments(affichage);
+  }
+
+
+
+  char Code_Entre[CODE_LONGUEUR]; 
+  for (int i = 0; i < CODE_LONGUEUR; i++) {  
+    Code_Entre[i] = affichage;
+   
+  }  
+  Serial.println();  
+  for (int i = 0; i < CODE_LONGUEUR; i++) {  
+    if (Code_Entre[i] != Code_Actuel[i]) {  
+      return false;  
+    }  
+  }  
+}
+}
+
+
+
 
