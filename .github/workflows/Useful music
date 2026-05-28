@@ -271,7 +271,22 @@ void setup() {
   display.setBrightness(7);
   display.clear();
 }
+///////////////////////////////////////////////////////////////////////////////////////////
+//Musique
+ pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+  Serial.begin(9600);
+  display.setBrightness(7);                         // clareté de l'écran
+  display.clear();
 
+  myServo11.attach(11);   //lier le servo et la pin 11
+  myServo11.write(90);          //servo en mode verrouillé au début
+
+
+ pinMode(A1, OUTPUT);//buzzer
+  pinMode(13, OUTPUT);//led indicator when singing a note
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
 void loop() {
   bool Code_Verif();
   char car = heroKeypad.waitForKey();
