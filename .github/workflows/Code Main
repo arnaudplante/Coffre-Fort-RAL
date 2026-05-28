@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include <TM1637Display.h>
 #include <Keypad.h>
+#include <Servo.h>
+
+bool boncode = false;
+Servo myServo11;
 
 const byte CODE_LONGUEUR = 4;
 byte input = 0;
@@ -9,7 +13,9 @@ const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
 int essai = 0;
 
-char Code_Actuel[CODE_LONGUEUR] = { '1','9','4','5' };  
+const int trigPin = 13;
+const int echoPin = 12;
+float duration, distance;
 
 byte a = 0;
 byte b = 0;
@@ -31,14 +37,25 @@ const char TOUCHES[ROWS][COLS] = {
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
 
 void setup() {
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
   Serial.begin(9600);
   display.setBrightness(7);
   display.clear();
+
+  myServo11.attach(11);
+  myServo11.write(90);
 }
 
 void loop() {
-  bool Code_Verif();
   char car = heroKeypad.waitForKey();
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = (duration * 0.0343) / 2;
 
   if (car == '*') {
     input = 0;
@@ -47,58 +64,55 @@ void loop() {
     return;
   }
 
-  if (car >= '0' && car <= '9') {
+  if (car == '#') {
+    if (boncode == true) {
+      myServo11.write(0);
+    } else {
+      essai++;
+      myServo11.write(90);
+      a = b = c = d = 0;
+      display.clear();
 
+      if (essai >= 3) {
+        byte tirets[4] = {0x40, 0x40, 0x40, 0x40};
+        display.setSegments(tirets);
+        delay(300000);
+        essai = 0;
+        display.clear();
+      }
+    }
+
+    display.clear();
+    a = b = c = d = 0;
+    input = 0;
+    return;
+  }
+
+  if (car >= '0' && car <= '9') {
     byte digit = display.encodeDigit(car - '0');
     input++;
 
-    if (input == 1) {
-      a = digit;
-    } else if (input == 2) {
-      b = digit;
-    } else if (input == 3) {
-      c = digit;
-    } else if (input == 4) {
+    if (input == 1) a = digit;
+    else if (input == 2) b = digit;
+    else if (input == 3) c = digit;
+    else if (input == 4) {
       d = digit;
-    }
-
-  if (car == '#') {  
-   
-    bool Acces_Permis = Code_Verif();   
-    if (Acces_Permis) { 
-      //le servo devrait déverrouiller le coffre ici
-      //aussi activer le code pour le photoresistor,
-      //que lorsque le coffre se referme, le code recommence.
-    } else { 
-      essai += 1; 
-      if (essai >= 3) {
-        delay(10000);
-        essai =0;
+ if (distance >= 11 && distance <= 13) {
+    
+    myServo11.write(90);
+    boncode = false;
+  }
+      if (a == display.encodeDigit(1) &&
+          b == display.encodeDigit(9) &&
+          c == display.encodeDigit(4) &&
+          d == display.encodeDigit(5)) {
+        boncode = true;
+      } else {
+        boncode = false;
       }
-      //mauvais mot de passe 
-    }  
-  }  
-
+    }
 
     byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
   }
-
-
-
-  char Code_Entre[CODE_LONGUEUR]; 
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
-    Code_Entre[i] = affichage;
-   
-  }  
-  Serial.println();  
-  for (int i = 0; i < CODE_LONGUEUR; i++) {  
-    if (Code_Entre[i] != Code_Actuel[i]) {  
-      return false;  
-    }  
-  }  
 }
-}
-
-
-
