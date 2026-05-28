@@ -48,7 +48,7 @@ void setup() {
 }
 
 void loop() {
-
+  char car = heroKeypad.waitForKey();
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
   digitalWrite(trigPin, HIGH);
@@ -56,13 +56,6 @@ void loop() {
   digitalWrite(trigPin, LOW);
   duration = pulseIn(echoPin, HIGH);
   distance = (duration * 0.0343) / 2;
-
-  if (distance >= 11 && distance <= 13) {
-    myServo11.write(90);
-    boncode = false;
-  }
-
-  char car = heroKeypad.waitForKey();
 
   if (car == '*') {
     input = 0;
@@ -74,7 +67,6 @@ void loop() {
   if (car == '#') {
     if (boncode == true) {
       myServo11.write(0);
-      delay(1000);
     } else {
       essai++;
       myServo11.write(90);
@@ -105,7 +97,11 @@ void loop() {
     else if (input == 3) c = digit;
     else if (input == 4) {
       d = digit;
-
+ if (distance >= 11 && distance <= 13) {
+    
+    myServo11.write(90);
+    boncode = false;
+  }
       if (a == display.encodeDigit(1) &&
           b == display.encodeDigit(9) &&
           c == display.encodeDigit(4) &&
