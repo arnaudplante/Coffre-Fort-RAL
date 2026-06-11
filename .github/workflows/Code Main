@@ -19,7 +19,7 @@ int essai = 0;
 // essais a 0
 const int trigPin = 13;
 const int echoPin = 12;
-// pins pour ultrasonic sencor
+// pins pour ultrasonic sensor
 float duration, distance;
 
 byte a = 0;
