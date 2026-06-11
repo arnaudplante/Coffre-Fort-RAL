@@ -37,9 +37,8 @@ const char TOUCHES[ROWS][COLS] = {
   {'7','8','9'},
   {'*','0','#'}
 };
-// setup pour le clavier souple
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
-
+// setup pour le clavier souple
 float mesurerDistance() {
   digitalWrite(trigPin, LOW);
   delayMicroseconds(2);
@@ -49,28 +48,33 @@ float mesurerDistance() {
   float dur = pulseIn(echoPin, HIGH);
   return (dur * 0.0343) / 2;
 }
-
+// code pour distance du ultrasonic sensor
 void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
+// setup pour pins ultrasonic sensor
   Serial.begin(9600);
+//pour moniteur serie
   display.setBrightness(7);
   display.clear();
-
+// reset ecran
   myServo11.attach(11);
   myServo11.write(90); 
+//met les servos fermés
 }
 
 void loop() {
   distance = mesurerDistance();
-
+// le sensor calcule la distance
   if (boncode && distance >= 11 && distance <= 13) {
-    myServo11.write(0);   
+    myServo11.write(0);  
+// ouvre le coffre si le code est bon
   } else if (boncode) {
     myServo11.write(90); 
+//sinon le coffre reste fermé
   }
 
-  char car = heroKeypad.getKey();
+  char car = heroKeypad.getKey(); // prends la touche
   if (!car) return; // si aucune touche pressee, il se passe rien
 
   if (car == '*') {
