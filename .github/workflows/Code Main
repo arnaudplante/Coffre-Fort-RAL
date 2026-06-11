@@ -36,6 +36,16 @@ const char TOUCHES[ROWS][COLS] = {
 
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
 
+float mesurerDistance() {
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  float dur = pulseIn(echoPin, HIGH);
+  return (dur * 0.0343) / 2;
+}
+
 void setup() {
   pinMode(trigPin, OUTPUT);
   pinMode(echoPin, INPUT);
@@ -44,18 +54,20 @@ void setup() {
   display.clear();
 
   myServo11.attach(11);
-  myServo11.write(90);
+  myServo11.write(90); 
 }
 
 void loop() {
-  char car = heroKeypad.waitForKey();
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  distance = (duration * 0.0343) / 2;
+  distance = mesurerDistance();
+
+  if (boncode && distance >= 11 && distance <= 13) {
+    myServo11.write(0);   
+  } else if (boncode) {
+    myServo11.write(90); 
+  }
+
+  char car = heroKeypad.getKey();
+  if (!car) return; // si aucune touche pressee, il se passe rien
 
   if (car == '*') {
     input = 0;
@@ -65,9 +77,7 @@ void loop() {
   }
 
   if (car == '#') {
-    if (boncode == true) {
-      myServo11.write(0);
-    } else {
+    if (boncode == false) {
       essai++;
       myServo11.write(90);
       a = b = c = d = 0;
@@ -85,6 +95,7 @@ void loop() {
     display.clear();
     a = b = c = d = 0;
     input = 0;
+    boncode = false;
     return;
   }
 
@@ -97,16 +108,13 @@ void loop() {
     else if (input == 3) c = digit;
     else if (input == 4) {
       d = digit;
- if (distance >= 11 && distance <= 13) {
-    
-    myServo11.write(90);
-    boncode = false;
-  }
+
       if (a == display.encodeDigit(1) &&
           b == display.encodeDigit(9) &&
           c == display.encodeDigit(4) &&
           d == display.encodeDigit(5)) {
         boncode = true;
+        essai = 0; 
       } else {
         boncode = false;
       }
