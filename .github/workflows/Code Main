@@ -83,6 +83,7 @@ void loop() {
     display.clear();
     return;
   }
+// efface le code sur l'ecran
 
   if (car == '#') {
     if (boncode == false) {
@@ -90,7 +91,7 @@ void loop() {
       myServo11.write(90);
       a = b = c = d = 0;
       display.clear();
-
+// vérifie le code quand la touche # est pressée
       if (essai >= 3) {
         byte tirets[4] = {0x40, 0x40, 0x40, 0x40};
         display.setSegments(tirets);
@@ -99,16 +100,16 @@ void loop() {
         display.clear();
       }
     }
-
+// si 3 essais mauvais, le coffre est verrouillé pendant 5 minutes
     display.clear();
     a = b = c = d = 0;
     input = 0;
     boncode = false;
     return;
-  }
+  }//efface l'ecran
 
-  if (car >= '0' && car <= '9') {
-    byte digit = display.encodeDigit(car - '0');
+  if (car >= '0' && car <= '9') { // cherche les chiffres de 0-9
+    byte digit = display.encodeDigit(car - '0'); //met les chiffres en segments pour display
     input++;
 
     if (input == 1) a = digit;
@@ -116,19 +117,21 @@ void loop() {
     else if (input == 3) c = digit;
     else if (input == 4) {
       d = digit;
-
+// met les chiffres en ordre que les touches sont pressées
       if (a == display.encodeDigit(1) &&
           b == display.encodeDigit(9) &&
           c == display.encodeDigit(4) &&
           d == display.encodeDigit(5)) {
         boncode = true;
-        essai = 0; 
+        essai = 0;
+// si le code est 1945, la variable boncode est vraie
       } else {
         boncode = false;
+// sinon, c'est pas le bon code
       }
     }
 
     byte affichage[4] = {a, b, c, d};
     display.setSegments(affichage);
-  }
+  } //met les chiffres sur l'ecran
 }
