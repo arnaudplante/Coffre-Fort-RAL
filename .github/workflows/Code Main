@@ -2,38 +2,42 @@
 #include <TM1637Display.h>
 #include <Keypad.h>
 #include <Servo.h>
-
+// blibliotheques
 bool boncode = false;
+// verrouille le coffre
 Servo myServo11;
-
+// pin du servo
 const byte CODE_LONGUEUR = 4;
+//nb de characteres dans le code
 byte input = 0;
+// met le nombre de touches appyees a 0
 const byte AFF_PROF_CLK_PIN = 2;
 const byte AFF_PROF_DIO_PIN = 3;
 TM1637Display display(AFF_PROF_CLK_PIN, AFF_PROF_DIO_PIN);
+//pins pour display
 int essai = 0;
-
+// essais a 0
 const int trigPin = 13;
 const int echoPin = 12;
+// pins pour ultrasonic sencor
 float duration, distance;
 
 byte a = 0;
 byte b = 0;
 byte c = 0;
 byte d = 0;
-
+// met les chiffres a 0
 const byte ROWS = 4;
 const byte COLS = 3;
 const byte ROW_PINS[ROWS] = {4, 5, 6, 7};
 const byte COL_PINS[COLS] = {8, 9, 10};
-
 const char TOUCHES[ROWS][COLS] = {
   {'1','2','3'},
   {'4','5','6'},
   {'7','8','9'},
   {'*','0','#'}
 };
-
+// setup pour le clavier souple
 Keypad heroKeypad = Keypad(makeKeymap(TOUCHES), ROW_PINS, COL_PINS, ROWS, COLS);
 
 float mesurerDistance() {
